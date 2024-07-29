@@ -60,6 +60,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
     variance_ratio = kwargs.get('variance_ratio',None)
     norm = kwargs.get('norm',None)
     cbar_yn = kwargs.get('cbar_yn',True)
+    titlesize = kwargs.get('titlesize',None)
 
     # fig = kwargs.get('fig',None)
     # ax = kwargs.get('ax',None)
@@ -92,7 +93,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
 
     if title == None:
         title = 'Scores Plot'
-    ax.set_title(title)
+    ax.set_title(title,fontsize=titlesize)
    
     if cmap != None and cbar_yn == True:
         cbar = fig.colorbar(mappable,orientation="horizontal",shrink=0.75)
@@ -167,7 +168,8 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
     title = kwargs.get('title','Scree Plot')
     save_path = kwargs.get('save_path',None)
 
-    ax.set_title(title)
+    titlesize = kwargs.get('titlesize',None)
+    ax.set_title(title,fontsize=titlesize)
 
     if save_path != None:
         save_figure(fig,save_path)
@@ -183,8 +185,6 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
         - xlabel: label the x axis
     '''
 
-    variance_ratio = kwargs.get('variance_ratio',None)
-
     if fig == None:
         fig = plt.figure()
     if np.all(ax) == None:
@@ -195,9 +195,7 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
     def just_the_loadings_plots():
         ax[i].axhline(y=0, color = '#000', linewidth = 0.7)#, linewidth = 1, linestyle='--')
         ax[i].plot(variables,loadings[PCs[i]-1,:],c=c),#linewidth = 2,color = '#008000'
-        ylabel = f'PC{PCs[i]} Eigenvalues'
-        if np.any(variance_ratio) != None: ylabel += f' ({round(variance_ratio[PCs[i]-1]*100,2)}%)'
-        ax[i].set_ylabel(ylabel)
+        ax[i].set_ylabel(f'PC{PCs[i]} Loadings')
 
     if type(variables[0]) == str:
         locationsx = np.arange(len(variables))
@@ -214,7 +212,8 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
     title = kwargs.get('title','Loadings Plots')
     save_path = kwargs.get('save_path',None)
 
-    fig.suptitle(title)
+    titlesize = kwargs.get('titlesize',None)
+    fig.suptitle(title,fontsize=titlesize)
 
     if save_path != None:
         save_figure(fig,save_path)

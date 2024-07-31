@@ -49,6 +49,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
         - cmap: the colour map to be used.
         - cbar_title: title of the colour bar.
         - save_path: the directory path where you want to save the plot.
+        - titlesize: set the font size of the axis title.
     '''
     title = kwargs.get('title',None)
     c = kwargs.get('c',None)
@@ -116,6 +117,8 @@ def Hotelling(scores_values:np.ndarray,PCs:list|np.ndarray,ax:plt.Axes,**kwargs)
     # from https://stackoverflow.com/questions/46732075/python-pca-plot-using-hotellings-t2-for-a-confidence-interval
 
     confidence = kwargs.get('confidence',.95)
+    legend = kwargs.get('legend',True)
+
     theta = np.concatenate((np.linspace(-np.pi, np.pi, 50), np.linspace(np.pi, -np.pi, 50)))
     circle = np.array((np.cos(theta), np.sin(theta)))
     sigma = np.cov(np.array((scores_values[:,PCs[0]-1], scores_values[:,PCs[1]-1])))
@@ -125,7 +128,8 @@ def Hotelling(scores_values:np.ndarray,PCs:list|np.ndarray,ax:plt.Axes,**kwargs)
     t = np.linspace(0, 2 * np.pi, 100)
     
     ax.plot(a * np.cos(t), b * np.sin(t), color = 'grey',linestyle = ':',label=f'Hotelling T$^{2}$ ({int(confidence*100)}%)')
-    ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
+    if legend == True:
+        ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
     #ax.grid(color = 'lightgray', linestyle = '--')
 
 def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure=None,ax:plt.Axes=None,**kwargs):
@@ -137,6 +141,7 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
         - line_colour: the colour of the line (preset: 'darkorange').
         - bar_colour: the colour of the bars of the cumulative sum (preset: 'green').
         - save_path: the directory path where you want to save the plot.
+        - titlesize: set the font size of the axis title.
     '''
     
     if fig == None:
@@ -146,6 +151,9 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
 
     line_colour = kwargs.get('line_colour',None)
     bar_colour = kwargs.get('bar_colour',None)
+    title = kwargs.get('title','Scree Plot')
+    save_path = kwargs.get('save_path',None)
+    titlesize = kwargs.get('titlesize',None)
 
     if line_colour == None: line_colour = 'darkorange'
     if bar_colour == None: bar_colour = 'green'
@@ -165,10 +173,7 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
     ax.set_xlabel('Principal Component')
     ax.set_ylabel('Variance Explained (%)')
 
-    title = kwargs.get('title','Scree Plot')
-    save_path = kwargs.get('save_path',None)
-
-    titlesize = kwargs.get('titlesize',None)
+    
     ax.set_title(title,fontsize=titlesize)
 
     if save_path != None:
@@ -182,7 +187,9 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
         - title: the title of the plot (preset: 'Loadings Plot').
         - c: the colour of the line.
         - save_path: the directory path where you want to save the plot.
-        - xlabel: label the x axis
+        - xlabel: label the x axis (for numerical variables).
+        - titlesize: set the font size of the figure title.
+        - invert_axis: set whether the x-axis should go from smallest to largest value (False) or from largest to smallest value (True).
     '''
 
     if fig == None:
@@ -191,6 +198,10 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
         ax = fig.subplots(len(PCs),sharex=True)
     
     c = kwargs.get('c',None)
+    title = kwargs.get('title','Loadings Plots')
+    save_path = kwargs.get('save_path',None)
+    titlesize = kwargs.get('titlesize',None)
+    invert_axis = kwargs.get('invert_axis',False)
 
     def just_the_loadings_plots():
         ax[i].axhline(y=0, color = '#000', linewidth = 0.7)#, linewidth = 1, linestyle='--')
@@ -205,14 +216,12 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
 
     else:
         for i in range(len(PCs)): just_the_loadings_plots()
-        ax[0].set_xlim(np.min(variables),np.max(variables))
+        if invert_axis == False:
+            ax[0].set_xlim(np.min(variables),np.max(variables))
+        else: ax[0].set_xlim(np.max(variables),np.min(variables))
         xlabel = kwargs.get('xlabel',None)
         ax[-1].set_xlabel(xlabel)
-
-    title = kwargs.get('title','Loadings Plots')
-    save_path = kwargs.get('save_path',None)
-
-    titlesize = kwargs.get('titlesize',None)
+    
     fig.suptitle(title,fontsize=titlesize)
 
     if save_path != None:

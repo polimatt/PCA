@@ -203,26 +203,39 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
     titlesize = kwargs.get('titlesize',None)
     invert_axis = kwargs.get('invert_axis',False)
 
-    def just_the_loadings_plots():
-        ax[i].axhline(y=0, color = '#000', linewidth = 0.7)#, linewidth = 1, linestyle='--')
-        ax[i].plot(variables,loadings[PCs[i]-1,:],c=c),#linewidth = 2,color = '#008000'
-        ax[i].set_ylabel(f'PC{PCs[i]} Loadings')
+    def just_the_loadings_plots(ax,i):
+        ax.axhline(y=0, color = '#000', linewidth = 0.7)#, linewidth = 1, linestyle='--')
+        ax.plot(variables,loadings[PCs[i]-1,:],c=c),#linewidth = 2,color = '#008000'
+        ax.set_ylabel(f'PC{PCs[i]} Loadings')
 
     if type(variables[0]) == str:
         locationsx = np.arange(len(variables))
-        for i in range(len(PCs)):
-            just_the_loadings_plots()
-            ax[i].set_xticks(locationsx,variables,rotation = 60)
+        if len(PCs) == 1:
+            just_the_loadings_plots(ax,0)
+            ax.set_xticks(locationsx,variables,rotation = 60)
+        else:
+            for i in range(len(PCs)):
+                just_the_loadings_plots(ax[i],i)
+                ax[i].set_xticks(locationsx,variables,rotation = 60)
 
     else:
-        for i in range(len(PCs)): just_the_loadings_plots()
+        if len(PCs) == 1:
+            just_the_loadings_plots(ax,0)
+            ax0 = ax
+            ax_minus1 = ax
+        else:
+            for i in range(len(PCs)): just_the_loadings_plots(ax[i],i)
+            ax0 = ax[0]
+            ax_minus1 = ax[-1]
+
         if invert_axis == False:
-            ax[0].set_xlim(np.min(variables),np.max(variables))
-        else: ax[0].set_xlim(np.max(variables),np.min(variables))
+            ax0.set_xlim(np.min(variables),np.max(variables))
+        else: ax0.set_xlim(np.max(variables),np.min(variables))
         xlabel = kwargs.get('xlabel',None)
-        ax[-1].set_xlabel(xlabel)
-    
-    fig.suptitle(title,fontsize=titlesize)
+        ax_minus1.set_xlabel(xlabel)
+     
+    if len(PCs) == 1: ax.set_title(title,fontsize=titlesize)
+    else: fig.suptitle(title,fontsize=titlesize)
 
     if save_path != None:
         save_figure(fig,save_path)

@@ -49,7 +49,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
         - cmap: the colour map to be used.
         - cbar_title: title of the colour bar.
         - save_path: the directory path where you want to save the plot.
-        - titlesize: set the font size of the axis title.
+        - titlesize: set the font size of the axes title.
     '''
     title = kwargs.get('title',None)
     c = kwargs.get('c',None)
@@ -182,6 +182,7 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
 def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|list,fig:plt.Figure=None,ax:plt.Axes=None,**kwargs):
     '''
     Plot a Loadings plot given a set of variables (numeric or strings) and the principal components (PCs) associated with them.
+    This function supports multiple loadings plots in a single figure and single-axes loadings plots.
 
     kwargs:
         - title: the title of the plot (preset: 'Loadings Plot').

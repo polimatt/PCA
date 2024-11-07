@@ -188,9 +188,9 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
         - invert_axis: set whether the x-axis should go from smallest to largest value (False) or from largest to smallest value (True).
     '''
 
-    if fig == None:
+    if fig is None:
         fig = plt.figure()
-    if len(ax)==0:
+    if ax is None:
         ax = fig.subplots(len(PCs),sharex=True)
     
     c = kwargs.get('c',None)

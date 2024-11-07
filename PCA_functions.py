@@ -306,7 +306,7 @@ def corr_matrix(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|lis
        
     ax.set_ylim(len(variables)-1,0)
     cbar = fig.colorbar(c,ticks=range(0,200,20))
-    cbar.set_label('Degrees ($\degree$)')
+    cbar.set_label('Degrees ($\\degree$)')
 
     if save_path != None:
         save_figure(fig,save_path)

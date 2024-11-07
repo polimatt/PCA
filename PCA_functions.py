@@ -174,7 +174,7 @@ def scree_plot(PCs:np.ndarray|list,variance_ratio:np.ndarray|list,fig:plt.Figure
     if save_path != None:
         save_figure(fig,save_path)
 
-def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|list,fig:plt.Figure=None,ax:plt.Axes=None,**kwargs):
+def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|list,fig:plt.Figure=None,ax:plt.Axes=[],**kwargs):
     '''
     Plot a Loadings plot given a set of variables (numeric or strings) and the principal components (PCs) associated with them.
     This function supports multiple loadings plots in a single figure and single-axes loadings plots.
@@ -190,7 +190,7 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
 
     if fig == None:
         fig = plt.figure()
-    if np.all(ax) == None:
+    if len(ax)==0:
         ax = fig.subplots(len(PCs),sharex=True)
     
     c = kwargs.get('c',None)

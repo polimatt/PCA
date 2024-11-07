@@ -58,10 +58,10 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
     save_path = kwargs.get('save_path',None)
     label = kwargs.get('label',None)
     marker = kwargs.get('marker',None)
-    variance_ratio = kwargs.get('variance_ratio',None)
+    variance_ratio = kwargs.get('variance_ratio',[])
     norm = kwargs.get('norm',None)
     cbar_yn = kwargs.get('cbar_yn',True)
-    titlesize = kwargs.get('titlesize',None)
+    titlesize = kwargs.get('titlesize',12)
 
     # fig = kwargs.get('fig',None)
     # ax = kwargs.get('ax',None)
@@ -78,7 +78,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
     if label != None:
         ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
 
-    if np.all(variance_ratio) != None:
+    if len(variance_ratio)>0:
         var_text_x = f' ({round(variance_ratio[PCs[0]-1]*100,2)}%)'
         var_text_y = f' ({round(variance_ratio[PCs[1]-1]*100,2)}%)'
     else:
@@ -107,17 +107,12 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
 
     return mappable
 
-def Hotelling(scores_values:np.ndarray,PCs:list|np.ndarray,ax:plt.Axes,**kwargs):
+def Hotelling(scores_values:np.ndarray,PCs:list|np.ndarray,ax:plt.Axes,confidence:float=.95,legend:bool=True,color:str='grey',linestyle:str=':',**kwargs):
     '''
-    Draw a Hotelling T2 ellipse (95% confidence).
-    kwargs:
-        - Confidence: set to 0.95 (95%) by default.
+    Draw a Hotelling T2 ellipse (95% confidence, though the confidence range can be modified).
     '''
     # 95% Hotelling ellipse
     # from https://stackoverflow.com/questions/46732075/python-pca-plot-using-hotellings-t2-for-a-confidence-interval
-
-    confidence = kwargs.get('confidence',.95)
-    legend = kwargs.get('legend',True)
 
     theta = np.concatenate((np.linspace(-np.pi, np.pi, 50), np.linspace(np.pi, -np.pi, 50)))
     circle = np.array((np.cos(theta), np.sin(theta)))
@@ -127,7 +122,7 @@ def Hotelling(scores_values:np.ndarray,PCs:list|np.ndarray,ax:plt.Axes,**kwargs)
     a, b = np.max(ell[: ,0]), np.max(ell[: ,1]) #95% ellipse bounds
     t = np.linspace(0, 2 * np.pi, 100)
     
-    ax.plot(a * np.cos(t), b * np.sin(t), color = 'grey',linestyle = ':',label=f'Hotelling T$^{2}$ ({int(confidence*100)}%)')
+    ax.plot(a * np.cos(t), b * np.sin(t), color = color, linestyle = linestyle, label=f'Hotelling T$^{2}$ ({int(confidence*100)}%)',**kwargs)
     if legend == True:
         ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
     #ax.grid(color = 'lightgray', linestyle = '--')

@@ -73,7 +73,7 @@ def scores_plot(scores_values:np.ndarray,PCs:list|np.ndarray,fig:plt.Figure=None
 
     # ax.scatter(scores_values[:,PCs[0]-1],scores_values[:,PCs[1]-1], c=c, cmap=cmap,label=label,marker=marker)
 
-    mappable = ax.scatter(scores_values[:,PCs[0]-1],scores_values[:,PCs[1]-1], c=c, cmap=cmap,label=label,marker=marker,norm=norm)
+    mappable = ax.scatter(scores_values[:,PCs[0]-1],scores_values[:,PCs[1]-1], c=c, cmap=cmap,label=label,marker=marker,norm=norm,zorder=5)
 
     if label != None:
         ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)

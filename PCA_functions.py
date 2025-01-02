@@ -13,27 +13,38 @@ def SNV(x:np.ndarray)->np.ndarray:
     return new
 
 def SNV_matrix(x:np.ndarray)->np.ndarray:
-    
-    new = np.zeros_like(x)
-    for row_index in range(int(np.shape(x)[0])):
-        new[row_index,:] = SNV(x[row_index,:])
+    mean = np.mean(x,axis=1)
+    mean = np.reshape(mean,(len(mean),1))
+    std = np.std(x,axis=1)
+    std = np.reshape(std,(len(std),1))
+    return np.divide(np.subtract(x, mean) , std)
 
-    return new
+def standardise(x:np.ndarray)->np.ndarray:
+    return np.divide(np.subtract(x, np.mean(x,axis=0)) ,  np.std(x,axis=0)) # center by mean of column and divide by std of column
 
-def get_pca_data(data:np.ndarray,no_of_components:int,method:str='SNV')->tuple:
+def get_pca_data(data:np.ndarray,no_of_components:int=None,method:str='SNV')->tuple:
     
     if method == 'SNV':
         adj_data = SNV_matrix(data)
     
-    else: adj_data = data
+    elif method in ['standardise','standardize','standard']:
+        adj_data = standardise(data)
+
+    else: adj_data = data.copy()
+
+    if no_of_components == None:
+        # max no of dimesions is numbers of points - 1
+        no_of_components = np.min([len(adj_data[:,0]),len(adj_data[0,:])])-1
 
     pca = decomposition.PCA(n_components=no_of_components)
 
     scores_values = pca.fit_transform(adj_data)
 
+    # % eigen values
     variance_ratio = pca.explained_variance_ratio_
     PCs = np.arange(pca.n_components_) + 1
 
+    # eigenvectors
     loadings = np.array(pca.components_)
 
     return scores_values, variance_ratio, PCs, loadings
@@ -196,36 +207,44 @@ def loadings_plot(variables:np.ndarray|list,loadings:np.ndarray,PCs:np.ndarray|l
     save_path = kwargs.get('save_path',None)
     invert_axis = kwargs.get('invert_axis',False)
     text_rotation = kwargs.get('text_rotation',60)
+    xlabel = kwargs.get('xlabel',None)
+    
+    kwargs.pop('c', None)
+    kwargs.pop('title', None)
+    kwargs.pop('save_path', None)
+    kwargs.pop('invert_axis', None)
+    kwargs.pop('text_rotation', None)
+    kwargs.pop('xlabel', None)
 
-    def just_the_loadings_plots(ax,i):
+    def just_the_loadings_plots(ax,i,**kwargs):
         ax.axhline(y=0, color = '#000', linewidth = 0.7)#, linewidth = 1, linestyle='--')
-        ax.plot(variables,loadings[PCs[i]-1,:],c=c),#linewidth = 2,color = '#008000'
+        ax.plot(variables,loadings[PCs[i]-1,:],c=c,**kwargs),#linewidth = 2,color = '#008000'
         ax.set_ylabel(f'PC{PCs[i]}\nLoadings',fontsize=labelsize)
 
     if np.any([isinstance(v,str) for v in variables]):
         locationsx = np.arange(len(variables))
         if len(PCs) == 1:
-            just_the_loadings_plots(ax,0)
+            just_the_loadings_plots(ax,0,**kwargs)
             ax.set_xticks(locationsx,variables,rotation = text_rotation)
         else:
             for i in range(len(PCs)):
-                just_the_loadings_plots(ax[i],i)
+                just_the_loadings_plots(ax[i],i,**kwargs)
                 ax[i].set_xticks(locationsx,variables,rotation = text_rotation)
 
     else:
         if len(PCs) == 1:
-            just_the_loadings_plots(ax,0)
+            just_the_loadings_plots(ax,0,**kwargs)
             ax0 = ax
             ax_minus1 = ax
         else:
-            for i in range(len(PCs)): just_the_loadings_plots(ax[i],i)
+            for i in range(len(PCs)): just_the_loadings_plots(ax[i],i,**kwargs)
             ax0 = ax[0]
             ax_minus1 = ax[-1]
 
         if invert_axis == False:
             ax0.set_xlim(np.min(variables),np.max(variables))
         else: ax0.set_xlim(np.max(variables),np.min(variables))
-        xlabel = kwargs.get('xlabel',None)
+        
         ax_minus1.set_xlabel(xlabel,fontsize=labelsize)
      
     if len(PCs) == 1: ax.set_title(title,fontsize=titlesize)

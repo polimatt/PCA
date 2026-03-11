@@ -6,16 +6,10 @@ import scipy.stats
 labelsize = 12
 titlesize = 15
 
-def SNV(x:np.ndarray)->np.ndarray:
-    new = np.zeros_like(x)
-    new = ( x - np.mean(x) ) / np.std(x)
-
-    return new
-
-def SNV_matrix(x:np.ndarray)->np.ndarray:
-    mean = np.mean(x,axis=1)
+def snv(x:np.ndarray)->np.ndarray:
+    mean = np.mean(x.astype(float),axis=1)
     mean = np.reshape(mean,(len(mean),1))
-    std = np.std(x,axis=1)
+    std = np.std(x.astype(float),axis=1)
     std = np.reshape(std,(len(std),1))
     return np.divide(np.subtract(x, mean) , std)
 
@@ -25,7 +19,7 @@ def standardise(x:np.ndarray)->np.ndarray:
 def get_pca_data(data:np.ndarray,no_of_components:int=None,method:str='SNV')->tuple:
     
     if method == 'SNV':
-        adj_data = SNV_matrix(data)
+        adj_data = snv(data)
     
     elif method in ['standardise','standardize','standard']:
         adj_data = standardise(data)
